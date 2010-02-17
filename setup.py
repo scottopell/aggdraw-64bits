@@ -15,7 +15,7 @@
 from distutils.core import setup, Extension
 import os
 
-VERSION = "1.1-20051010"
+VERSION = "1.1-64bits"
 
 # tweak as necessary
 FREETYPE_ROOT = "../../kits/freetype-2.1.10"
