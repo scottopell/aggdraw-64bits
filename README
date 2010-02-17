@@ -12,6 +12,13 @@ Enjoy /F
 fredrik@pythonware.com
 http://www.pythonware.com
 
+NOTE: This is a patched version of the official package to support
+64 bits systems. To use it on your projects, make sure you specify
+the dependency as "aggdraw == 1.1-64bits". You'd also need to make
+the distribution available at some place setuptools can reach
+with the find-links options, or re-use the branch hosted at Bitbucket:
+http://bitbucket.org/2degrees/aggdraw-64bits/
+
 --------------------------------------------------------------------
 Build instructions (all platforms)
 --------------------------------------------------------------------
