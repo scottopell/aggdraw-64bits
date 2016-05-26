@@ -501,13 +501,13 @@ draw_new(PyObject* self_, PyObject* args)
 
     self->image = image;
     if (image) {
-        PyObject* buffer = PyObject_CallMethod(image, "tostring", NULL);
+        PyObject* buffer = PyObject_CallMethod(image, "tobytes", NULL);
         if (!buffer)
             return NULL; /* FIXME: release resources */
         if (!PyString_Check(buffer)) {
             PyErr_SetString(
                 PyExc_TypeError,
-                "bad 'tostring' return value (expected string)"
+                "bad 'tobytes' return value (expected string)"
                 );
             Py_DECREF(buffer);
             return NULL;
@@ -1011,10 +1011,10 @@ draw_settransform(DrawObject* self, PyObject* args)
 }
 
 static PyObject*
-draw_fromstring(DrawObject* self, PyObject* args)
+draw_frombytes(DrawObject* self, PyObject* args)
 {
     char* data = NULL; int data_size;
-    if (!PyArg_ParseTuple(args, "s#:fromstring", &data, &data_size))
+    if (!PyArg_ParseTuple(args, "s#:frombytes", &data, &data_size))
         return NULL;
 
     if (data_size >= self->buffer_size)
@@ -1029,9 +1029,9 @@ draw_fromstring(DrawObject* self, PyObject* args)
 }
 
 static PyObject*
-draw_tostring(DrawObject* self, PyObject* args)
+draw_tobytes(DrawObject* self, PyObject* args)
 {
-    if (!PyArg_ParseTuple(args, ":tostring"))
+    if (!PyArg_ParseTuple(args, ":tobytes"))
         return NULL;
 
     return PyString_FromStringAndSize(
@@ -1052,11 +1052,11 @@ draw_flush(DrawObject* self, PyObject* args)
         return Py_None;
     }
 
-    PyObject* buffer = draw_tostring(self, args);
+    PyObject* buffer = draw_tobytes(self, args);
     if (!buffer)
         return NULL;
 
-    result = PyObject_CallMethod(self->image, "fromstring", "N", buffer);
+    result = PyObject_CallMethod(self->image, "frombytes", "N", buffer);
     if (!result)
         return NULL;
 
@@ -1090,8 +1090,8 @@ static PyMethodDef draw_methods[] = {
 
     {"flush", (PyCFunction) draw_flush, METH_VARARGS},
 
-    {"fromstring", (PyCFunction) draw_fromstring, METH_VARARGS},
-    {"tostring", (PyCFunction) draw_tostring, METH_VARARGS},
+    {"frombytes", (PyCFunction) draw_frombytes, METH_VARARGS},
+    {"tobytes", (PyCFunction) draw_tobytes, METH_VARARGS},
 
     {NULL, NULL}
 };
