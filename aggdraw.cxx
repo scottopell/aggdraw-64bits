@@ -501,7 +501,9 @@ draw_new(PyObject* self_, PyObject* args)
 
     self->image = image;
     if (image) {
-        PyObject* buffer = PyObject_CallMethod(image, "tobytes", NULL);
+        PyObject* buffer = PyObject_CallMethod(image,
+                                               const_cast<char *>("tobytes"),
+                                               NULL);
         if (!buffer)
             return NULL; /* FIXME: release resources */
         if (!PyString_Check(buffer)) {
@@ -527,16 +529,20 @@ draw_new(PyObject* self_, PyObject* args)
 
     switch (self->mode) {
     case agg::pix_format_gray8:
-        self->draw = new draw_adaptor<agg::pixfmt_gray8>(self, "L");
+        self->draw = new draw_adaptor<agg::pixfmt_gray8>(self,
+                                                         const_cast<char *>("L"));
         break;
     case agg::pix_format_rgb24:
-        self->draw = new draw_adaptor<agg::pixfmt_rgb24>(self, "RGB");
+        self->draw = new draw_adaptor<agg::pixfmt_rgb24>(self,
+                                                         const_cast<char *>("RGB"));
         break;
     case agg::pix_format_bgr24:
-        self->draw = new draw_adaptor<agg::pixfmt_bgr24>(self, "BGR");
+        self->draw = new draw_adaptor<agg::pixfmt_bgr24>(self,
+                                                         const_cast<char *>("BGR"));
         break;
     default:
-        self->draw = new draw_adaptor<agg::pixfmt_rgba32>(self, "RGBA");
+        self->draw = new draw_adaptor<agg::pixfmt_rgba32>(self,
+                                                         const_cast<char *>("RGBA"));
         break;
     }
 
@@ -636,7 +642,8 @@ getcolor(PyObject* color, int opacity)
     /* unknown color: pass it to the Python layer */
     if (aggdraw_getcolor_obj) {
         PyObject* result;
-        result = PyObject_CallFunction(aggdraw_getcolor_obj, "O", color);
+        result = PyObject_CallFunction(aggdraw_getcolor_obj,
+                                       const_cast<char *>("O"), color);
         if (result) {
             int ok = PyArg_ParseTuple(result, "iii", &red, &green, &blue);
             Py_DECREF(result);
@@ -1056,7 +1063,8 @@ draw_flush(DrawObject* self, PyObject* args)
     if (!buffer)
         return NULL;
 
-    result = PyObject_CallMethod(self->image, "frombytes", "N", buffer);
+    result = PyObject_CallMethod(self->image, const_cast<char *>("frombytes"),
+                                 const_cast<char *>("N"), buffer);
     if (!result)
         return NULL;
 
@@ -1130,9 +1138,10 @@ pen_new(PyObject* self_, PyObject* args, PyObject* kw)
     PyObject* color;
     float width = 1.0;
     int opacity = 255;
-    static char* kwlist[] = { "color", "width", "opacity", NULL };
-    if (!PyArg_ParseTupleAndKeywords(args, kw, "O|fi:Pen", kwlist,
-                                     &color, &width, &opacity))
+    static const char* kwlist[] = { "color", "width", "opacity", NULL };
+    if (!PyArg_ParseTupleAndKeywords(args, kw, "O|fi:Pen",
+                                     const_cast<char **>(kwlist), &color,
+                                     &width, &opacity))
         return NULL;
 
     self = PyObject_NEW(PenObject, &PenType);
@@ -1161,9 +1170,10 @@ brush_new(PyObject* self_, PyObject* args, PyObject* kw)
 
     PyObject* color;
     int opacity = 255;
-    static char* kwlist[] = { "color", "opacity", NULL };
-    if (!PyArg_ParseTupleAndKeywords(args, kw, "O|i:Brush", kwlist,
-                                     &color, &opacity))
+    static const char* kwlist[] = { "color", "opacity", NULL };
+    if (!PyArg_ParseTupleAndKeywords(args, kw, "O|i:Brush",
+                                     const_cast<char **>(kwlist), &color,
+                                     &opacity))
         return NULL;
 
     self = PyObject_NEW(BrushObject, &BrushType);
@@ -1192,9 +1202,10 @@ font_new(PyObject* self_, PyObject* args, PyObject* kw)
     char* filename;
     float size = 12;
     int opacity = 255;
-    static char* kwlist[] = { "color", "file", "size", "opacity", NULL };
-    if (!PyArg_ParseTupleAndKeywords(args, kw, "Os|fi:Font", kwlist,
-                                     &color, &filename, &size, &opacity))
+    static const char* kwlist[] = { "color", "file", "size", "opacity", NULL };
+    if (!PyArg_ParseTupleAndKeywords(args, kw, "Os|fi:Font",
+                                     const_cast<char **>(kwlist), &color,
+                                     &filename, &size, &opacity))
         return NULL;
 
 #if defined(HAVE_FREETYPE2)
